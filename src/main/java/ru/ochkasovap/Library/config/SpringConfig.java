@@ -18,7 +18,7 @@ import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
 @Configuration
-@ComponentScan("ru.redw4y.HomeAccounting")
+@ComponentScan("ru.ochkasovap.Library")
 @EnableWebMvc 
 @PropertySource("classpath:database.properties")
 public class SpringConfig {

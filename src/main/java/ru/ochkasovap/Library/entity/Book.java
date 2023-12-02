@@ -34,8 +34,12 @@ public class Book {
 		return userID;
 	}
 
-	public void setUserID(int userID) {
-		this.userID = userID;
+	public void setUserID(Integer userID) {
+		if (userID!=null) {
+			this.userID = userID;
+		} else {
+			userID = 0;
+		}
 	}
 
 	public String getAuthor() {
@@ -61,4 +65,13 @@ public class Book {
 	public void setYear(int year) {
 		this.year = year;
 	}
+	public boolean isBusy() {
+		return userID!=0;
+	}
+
+	@Override
+	public String toString() {
+		return name + ", " + author + "," + year;
+	}
+	
 }

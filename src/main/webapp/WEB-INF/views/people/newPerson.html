@@ -5,7 +5,7 @@
 <title>Добавление пользователя</title>
 </head>
 <body>
- <form th:method="POST" th:action="@{/}" th:object="${person}">
+ <form th:method="POST" th:action="@{/people/}" th:object="${person}">
 	 <input type="hidden" th:field="*{id}">
 	 <label for="name">Введите ФИО:</label>
 	 <input type="text" id="name" th:field="*{name}">

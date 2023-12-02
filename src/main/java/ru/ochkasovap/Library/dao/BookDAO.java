@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import ru.ochkasovap.Library.entity.Author;
 import ru.ochkasovap.Library.entity.Book;
 
 @Component
@@ -26,24 +27,30 @@ public class BookDAO {
 	}
 	public void updateBook(Book book) {
 		Integer authorID = getAuthorID(book.getAuthor());
-		jdbcTemplate.update("UPDATE book SET name=?, author_id=?, year=? WHERE id=?", book.getName(), authorID,
-				book.getYear(), book.getId());
+		Object userID = book.getUserID()!=0?book.getUserID():null;
+		jdbcTemplate.update("UPDATE book SET name=?, author_id=?, year=?, user_id=? WHERE id=?", book.getName(), authorID,
+				book.getYear(), userID, book.getId());
 	}
 	public List<Book> getBooks() {
-		return jdbcTemplate.query("SELECT * FROM book", new BeanPropertyRowMapper<>(Book.class));
+		StringBuilder query = new StringBuilder("SELECT b.id, b.user_id userID, b.name, a.name author, b.year FROM book b\n");
+		query.append("JOIN author a ON a.id = b.author_id");
+		return jdbcTemplate.query(query.toString(), new BeanPropertyRowMapper<>(Book.class));
 	}
 	public Book getBook(int bookID) {
 		//TODO validation
-		Optional<Book> book = jdbcTemplate.query("SELECT * FROM book WHERE id=?", new BeanPropertyRowMapper<>(Book.class), bookID).stream().findAny();
+		StringBuilder query = new StringBuilder("SELECT b.id, b.user_id userID, b.name, a.name author, b.year FROM book b\n");
+		query.append("JOIN author a ON a.id = b.author_id\n");
+		query.append("WHERE b.id=?");
+		Optional<Book> book = jdbcTemplate.query(query.toString(), new BeanPropertyRowMapper<>(Book.class), bookID).stream().findAny();
 		return book.get();
 	}
 
 	private Integer getAuthorID(String authorName) {
 		//TODO придумать условие while
 		while(true) { 
-			Optional<Integer> authors = jdbcTemplate.query("SELECT id FROM author WHERE name = ?", new BeanPropertyRowMapper<>(Integer.class), authorName).stream().findAny();
+			Optional<Author> authors = jdbcTemplate.query("SELECT id, name FROM author WHERE name = ?", new BeanPropertyRowMapper<>(Author.class), authorName).stream().findAny();
 			if(authors.isPresent()){
-				return authors.get();
+				return authors.get().getId();
 			}
 			jdbcTemplate.update("INSERT INTO author (name) VALUES (?)", authorName);
 		}

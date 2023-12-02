@@ -1,10 +1,35 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+<html xmlns:th="http://thymeleaf.org">
 
+<head>
+	<meta charset="UTF-8">
+	<title>Список книг</title>
+	<style>
+		.button {
+			display: inline-block;
+			border: 1px solid rgb(0, 0, 0);
+			color: rgb(0, 0, 0);
+			padding: 0 12px;
+			margin: 5px;
+			text-decoration: none;
+			background: #f2f2f2;
+			font-size: 12pt;
+			cursor: pointer;
+		}
+
+		.button:hover {
+			background: #e6e6ff;
+		}
+	</style>
+</head>
+</head>
+
+<body>
+	<div th:each="book : ${books}">
+		<a th:href="@{/books/}+${book.id}" class="button" th:text="${book}">Ссылка на книгу</a>
+	</div>
+	<hr>
+	<a th:href="@{/books/new}" class="button">Добавить книгу</a>
 </body>
+
 </html>

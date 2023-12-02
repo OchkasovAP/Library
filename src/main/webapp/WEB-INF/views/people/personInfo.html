@@ -30,8 +30,8 @@
 	<div th:each="book : ${personBooks}" th:text="${book}">Перечень книг</div>
 </div>
 <hr>
-<a th:href="@{/}+${person.id}+'/edit'" class="button">Редактировать</a>
-<form th:method="DELETE" th:action="@{/{id} (id=${person.id})}">
+<a th:href="@{/people/}+${person.id}+'/edit'" class="button">Редактировать</a>
+<form th:method="DELETE" th:action="@{/people/{id} (id=${person.id})}">
 	<input type="submit" class="button" value="Удалить">
 </form>
 </body>

@@ -1,10 +1,13 @@
 package ru.ochkasovap.Library.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import ru.ochkasovap.Library.entity.Book;
@@ -28,7 +31,7 @@ public class PersonDAO {
 	}
 	
 	public List<Person> getPersons() {
-		return jdbcTemplate.query("SELECT id, name, year_of_birth yearOfBirth FROM person", new BeanPropertyRowMapper<>(Person.class));
+		return jdbcTemplate.query("SELECT id, name, year_of_birth as yearOfBirth FROM person", new BeanPropertyRowMapper<>(Person.class));
 	}
 	
 	public Person getPerson(int personID) {

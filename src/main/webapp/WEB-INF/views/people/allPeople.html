@@ -25,10 +25,10 @@
 
 <body>
 	<div th:each="person : ${people}">
-		<a th:href="@{/}+${person.id}" th:text="${person}" class="button">Ссылка на пользователя</a>
+		<a th:href="@{/people/}+${person.id}" th:text="${person}" class="button">Ссылка на пользователя</a>
 	</div>
 	<hr>
-	<a th:href="@{/new}" class="button">Добавить человека</a>
+	<a th:href="@{/people/new}" class="button">Добавить человека</a>
 </body>
 
 </html>

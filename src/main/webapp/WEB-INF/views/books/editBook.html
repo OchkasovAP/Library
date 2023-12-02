@@ -1,10 +1,22 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+<html xmlns:th="http://thymeleaf.org">
 
+<head>
+	<meta charset="UTF-8">
+	<title>Изменение книги</title>
+</head>
+
+<body>
+	<form th:method="PATCH" th:action="@{/books/}" th:object="${book}">
+		<input type="hidden" th:field="*{id}">
+		<label for="name">Введите название книги:</label>
+		<input type="text" th:field="*{name}" id="name"><br>
+		<label for="author">Введите автора:</label>
+		<input type="text" th:field="*{author}" id="author"><br>
+		<label for="year">Введите год:</label>
+		<input type="text" th:field="*{year}" id="year"><br>
+		<input type="submit" value="Редактировать!">
+	</form>
 </body>
+
 </html>

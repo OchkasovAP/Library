@@ -1,5 +1,7 @@
 package ru.ochkasovap.Library.controllers;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import ru.ochkasovap.Library.dao.BookDAO;
+import ru.ochkasovap.Library.dao.PersonDAO;
 import ru.ochkasovap.Library.entity.Book;
 
 @Controller
@@ -19,6 +22,8 @@ import ru.ochkasovap.Library.entity.Book;
 public class BooksController {
 	@Autowired
 	private BookDAO bookDAO;
+	@Autowired
+	private PersonDAO personDAO;
 	
 	@GetMapping()
 	public String showBooks(Model model) {
@@ -38,7 +43,12 @@ public class BooksController {
 	
 	@GetMapping("/{id}")
 	public String showBookInfo(@PathVariable("id") int bookID, Model model) {
-		model.addAttribute("book", bookDAO.getBook(bookID));
+		Book book = bookDAO.getBook(bookID);
+		model.addAttribute("book", book);
+		model.addAttribute("people", personDAO.getPersons());
+		if(book.isBusy()) {
+			model.addAttribute("person", personDAO.getPerson(book.getUserID()));
+		}
 		return "books/bookInfo";
 	}
 	
@@ -50,8 +60,9 @@ public class BooksController {
 	@PatchMapping()
 	public String editBook(@ModelAttribute("book") Book book) {
 		bookDAO.updateBook(book);
-		return "redirect:/books/"+book.getId();
+		return "redirect:/books";
 	}
+	
 	@DeleteMapping("/{id}")
 	public String deleteBook(@PathVariable("id") int bookID) {
 		bookDAO.deleteBook(bookID);
