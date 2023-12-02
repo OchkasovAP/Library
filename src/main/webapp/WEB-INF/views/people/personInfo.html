@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Пользователь</title>
+	<style>
+		.button {
+			display: inline-block;
+			border: 1px solid rgb(0, 0, 0);
+			color: rgb(0, 0, 0);
+			padding: 0 12px;
+			margin: 5px;
+			text-decoration: none;
+			background: #f2f2f2;
+			font-size: 12pt;
+			cursor: pointer;
+		}
+
+		.button:hover {
+			background: #e6e6ff;
+		}
+	</style>
+</head>
+<body>
+<div th:text="${person}"></div>
+<div th:if="${personBooks.isEmpty()}">Пользователь пока не взял ни одной книги</div>
+<div th:if="${!personBooks.isEmpty()}">
+	<hr>
+	<div><b>Книги:</b></div>
+	<div th:each="book : ${personBooks}" th:text="${book}">Перечень книг</div>
+</div>
+<hr>
+<a th:href="@{/}+${person.id}+'/edit'" class="button">Редактировать</a>
+<form th:method="DELETE" th:action="@{/{id} (id=${person.id})}">
+	<input type="submit" class="button" value="Удалить">
+</form>
+</body>
+</html>

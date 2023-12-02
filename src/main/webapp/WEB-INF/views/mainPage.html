@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Библиотека</title>
+ <style>
+      .button {
+        display: inline-block;
+			border: 1px solid rgb(0, 0, 0);
+			color: rgb(0, 0, 0);
+			padding: 0 12px;
+			margin: 5px;
+			text-decoration: none;
+			background: #f2f2f2;
+			font-size: 12pt;
+			cursor: pointer;
+      }
+      .button:hover {background: #e6e6ff;}
+    </style>
+</head>
+<body>
+	<h2>Библиотека</h2>
+	<a th:href="@{/people}" class="button">Пользователи</a>
+	<a th:href="@{/books}" class="button">Книги</a>
+</body>
+</html>
