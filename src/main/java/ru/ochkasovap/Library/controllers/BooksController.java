@@ -1,10 +1,12 @@
 package ru.ochkasovap.Library.controllers;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.ochkasovap.Library.dao.BookDAO;
 import ru.ochkasovap.Library.dao.PersonDAO;
 import ru.ochkasovap.Library.entity.Book;
+import ru.ochkasovap.Library.util.BookValidator;
 
 @Controller
 @RequestMapping("/books")
@@ -24,6 +27,8 @@ public class BooksController {
 	private BookDAO bookDAO;
 	@Autowired
 	private PersonDAO personDAO;
+	@Autowired
+	private BookValidator validator;
 	
 	@GetMapping()
 	public String showBooks(Model model) {
@@ -36,29 +41,37 @@ public class BooksController {
 		return "books/newBook";
 	}
 	@PostMapping()
-	public String createPerson(@ModelAttribute("book") Book book) {
+	public String createPerson(@ModelAttribute("book") @Valid Book book, BindingResult bindingResult) {
+		validator.validate(book, bindingResult);
+		if(bindingResult.hasErrors()) {
+			return "books/newBook";
+		}
 		bookDAO.addBook(book);
 		return "redirect:/books";
 	}
 	
 	@GetMapping("/{id}")
 	public String showBookInfo(@PathVariable("id") int bookID, Model model) {
-		Book book = bookDAO.getBook(bookID);
+		Book book = bookDAO.getBook(bookID).get();
 		model.addAttribute("book", book);
 		model.addAttribute("people", personDAO.getPersons());
 		if(book.isBusy()) {
-			model.addAttribute("person", personDAO.getPerson(book.getUserID()));
+			model.addAttribute("person", personDAO.getPerson(book.getUserID()).get());
 		}
 		return "books/bookInfo";
 	}
 	
 	@GetMapping("/{id}/edit")
 	public String editBookView(@PathVariable("id") int bookID, Model model) {
-		model.addAttribute("book", bookDAO.getBook(bookID));
+		model.addAttribute("book", bookDAO.getBook(bookID).get());
 		return "books/editBook";
 	}
 	@PatchMapping()
-	public String editBook(@ModelAttribute("book") Book book) {
+	public String editBook(@ModelAttribute("book") @Valid Book book, BindingResult bindingResult) {
+		validator.validate(book, bindingResult);
+		if(bindingResult.hasErrors()) {
+			return "books/editBook";
+		}
 		bookDAO.updateBook(book);
 		return "redirect:/books";
 	}

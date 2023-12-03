@@ -25,6 +25,10 @@
 </head>
 
 <body>
+	<form th:method="GET" th:action="@{/}">
+		<input type="submit" class="button" value="Главная страница">
+	</form>
+	<hr>
 	<div th:each="book : ${books}">
 		<a th:href="@{/books/}+${book.id}" class="button" th:text="${book}">Ссылка на книгу</a>
 	</div>

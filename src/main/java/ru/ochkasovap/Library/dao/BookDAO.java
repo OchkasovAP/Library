@@ -1,6 +1,5 @@
 package ru.ochkasovap.Library.dao;
 
-
 import java.util.List;
 import java.util.Optional;
 
@@ -22,38 +21,50 @@ public class BookDAO {
 		jdbcTemplate.update("INSERT INTO book (name, author_id, year) VALUES (?, ?, ?)", book.getName(), authorID,
 				book.getYear());
 	}
+
 	public void deleteBook(int bookID) {
 		jdbcTemplate.update("DELETE FROM book WHERE id=?", bookID);
 	}
+
 	public void updateBook(Book book) {
 		Integer authorID = getAuthorID(book.getAuthor());
-		Object userID = book.getUserID()!=0?book.getUserID():null;
-		jdbcTemplate.update("UPDATE book SET name=?, author_id=?, year=?, user_id=? WHERE id=?", book.getName(), authorID,
-				book.getYear(), userID, book.getId());
+		Object userID = book.getUserID() != 0 ? book.getUserID() : null;
+		jdbcTemplate.update("UPDATE book SET name=?, author_id=?, year=?, user_id=? WHERE id=?", book.getName(),
+				authorID, book.getYear(), userID, book.getId());
 	}
+
 	public List<Book> getBooks() {
-		StringBuilder query = new StringBuilder("SELECT b.id, b.user_id userID, b.name, a.name author, b.year FROM book b\n");
+		StringBuilder query = new StringBuilder(
+				"SELECT b.id, b.user_id userID, b.name, a.name author, b.year FROM book b\n");
 		query.append("JOIN author a ON a.id = b.author_id");
 		return jdbcTemplate.query(query.toString(), new BeanPropertyRowMapper<>(Book.class));
 	}
-	public Book getBook(int bookID) {
-		//TODO validation
-		StringBuilder query = new StringBuilder("SELECT b.id, b.user_id userID, b.name, a.name author, b.year FROM book b\n");
+
+	public Optional<Book> getBook(int bookID) {
+		return jdbcTemplate.query(createQuery("WHERE b.id=?"), new BeanPropertyRowMapper<>(Book.class), bookID).stream().findAny();
+	}
+
+	public Optional<Book> getBook(String bookName) {
+		return jdbcTemplate.query(createQuery("WHERE b.name=?"), new BeanPropertyRowMapper<>(Book.class), bookName).stream().findAny();
+	}
+	
+	private String createQuery(String searchCondition) {
+		StringBuilder query = new StringBuilder(
+				"SELECT b.id, b.user_id userID, b.name, a.name author, b.year FROM book b\n");
 		query.append("JOIN author a ON a.id = b.author_id\n");
-		query.append("WHERE b.id=?");
-		Optional<Book> book = jdbcTemplate.query(query.toString(), new BeanPropertyRowMapper<>(Book.class), bookID).stream().findAny();
-		return book.get();
+		query.append(searchCondition);
+		return query.toString();
 	}
 
 	private Integer getAuthorID(String authorName) {
-		//TODO придумать условие while
-		while(true) { 
-			Optional<Author> authors = jdbcTemplate.query("SELECT id, name FROM author WHERE name = ?", new BeanPropertyRowMapper<>(Author.class), authorName).stream().findAny();
-			if(authors.isPresent()){
+		for (;;) {
+			Optional<Author> authors = jdbcTemplate.query("SELECT id, name FROM author WHERE name = ?",
+					new BeanPropertyRowMapper<>(Author.class), authorName).stream().findAny();
+			if (authors.isPresent()) {
 				return authors.get().getId();
 			}
 			jdbcTemplate.update("INSERT INTO author (name) VALUES (?)", authorName);
 		}
 	}
-	
+
 }

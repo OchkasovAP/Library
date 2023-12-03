@@ -7,13 +7,20 @@
 </head>
 
 <body>
+	<form th:method="GET" th:action="@{/}">
+		<input type="submit" value="Главная страница">
+	</form>
+	<hr>
 	<form th:method="POST" th:action="@{/books/}" th:object="${book}">
 		<label for="name">Введите название книги:</label>
 		<input type="text" th:field="*{name}" id="name"><br>
+		<div style="color: red;" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name Error</div>
 		<label for="author">Введите автора:</label>
 		<input type="text" th:field="*{author}" id="author"><br>
+		<div style="color: red;" th:if="${#fields.hasErrors('author')}" th:errors="*{author}">Author Error</div>
 		<label for="year">Введите год:</label>
-		<input type="text" th:field="*{year}" id="year"><br>
+		<input type="number" th:field="*{year}" id="year"><br>
+		<div style="color: red;" th:if="${#fields.hasErrors('year')}" th:errors="*{year}">Year Error</div>
 		<input type="submit" value="Создать!">
 	</form>
 </body>

@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://thymeleaf.org">
+
 <head>
-<meta charset="UTF-8">
-<title>Пользователь</title>
+	<meta charset="UTF-8">
+	<title>Пользователь</title>
 	<style>
 		.button {
 			display: inline-block;
@@ -21,18 +22,24 @@
 		}
 	</style>
 </head>
+
 <body>
-<div th:text="${person}"></div>
-<div th:if="${personBooks.isEmpty()}">Пользователь пока не взял ни одной книги</div>
-<div th:if="${!personBooks.isEmpty()}">
+	<form th:method="GET" th:action="@{/}">
+		<input type="submit" class="button" value="Главная страница">
+	</form>
 	<hr>
-	<div><b>Книги:</b></div>
-	<div th:each="book : ${personBooks}" th:text="${book}">Перечень книг</div>
-</div>
-<hr>
-<a th:href="@{/people/}+${person.id}+'/edit'" class="button">Редактировать</a>
-<form th:method="DELETE" th:action="@{/people/{id} (id=${person.id})}">
-	<input type="submit" class="button" value="Удалить">
-</form>
+	<div th:text="${person}"></div>
+	<div th:if="${personBooks.isEmpty()}">Пользователь пока не взял ни одной книги</div>
+	<div th:if="${!personBooks.isEmpty()}">
+		<hr>
+		<div><b>Книги:</b></div>
+		<div th:each="book : ${personBooks}" th:text="${book}">Перечень книг</div>
+	</div>
+	<hr>
+	<a th:href="@{/people/}+${person.id}+'/edit'" class="button">Редактировать</a>
+	<form th:method="DELETE" th:action="@{/people/{id} (id=${person.id})}">
+		<input type="submit" class="button" value="Удалить">
+	</form>
 </body>
+
 </html>

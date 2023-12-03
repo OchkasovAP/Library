@@ -5,9 +5,11 @@ import java.util.Date;
 
 import org.springframework.stereotype.Component;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 
 @Component
 public class Person {
@@ -16,13 +18,14 @@ public class Person {
 	private int id;
 	
 	@NotNull(message = "Поле ФИО не должно быть пустым")
+	@Pattern(regexp = "[А-Я][а-я]+ [А-Я][а-я]+ [А-Я][а-я]+", message = "Поле должно соответствовать шаблону \"Фамилия Имя Отчество\"")
 	private String name;
 	
-	@Min(value = 1900, message = "Не корректный год рождения")
-	@Max(value = actualYear)
 	@NotNull(message = "Поле \"год\" не должно быть пустым")
+	@Min(value = 1900, message = "Не корректный год рождения")
+	@Max(value = 2023, message = "Не корректный год рождения")
 	private int yearOfBirth;
-
+	
 	public Person() {
 	}
 

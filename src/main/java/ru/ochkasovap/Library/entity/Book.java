@@ -1,13 +1,22 @@
 package ru.ochkasovap.Library.entity;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import org.springframework.stereotype.Component;
 
 @Component
 public class Book {
 	private int id;
 	private int userID;
+	@NotNull(message = "Поле не должно быть пустым")
+	@Size(min = 1, message = "Поле не должно быть пустым")
 	private String author;
+	
+	@NotNull(message = "Поле не должно быть пустым")
+	@Size(min = 1, message = "Поле не должно быть пустым")
 	private String name;
+	
 	private int year;
 
 	public Book() {

@@ -3,6 +3,7 @@ package ru.ochkasovap.Library.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -11,18 +12,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.validation.Valid;
 import ru.ochkasovap.Library.dao.PersonDAO;
 import ru.ochkasovap.Library.entity.Person;
+import ru.ochkasovap.Library.util.PersonValidator;
 
 @Controller
 @RequestMapping("/people")
 public class PeopleController {
 	@Autowired
-	private PersonDAO personDAO;
+	private PersonDAO dao;
+	@Autowired
+	private PersonValidator validator;
 	
 	@GetMapping()
 	public String showPeople(Model model) {
-		model.addAttribute("people", personDAO.getPersons());
+		model.addAttribute("people", dao.getPersons());
 		return "people/allPeople";
 	}
 	
@@ -31,31 +36,39 @@ public class PeopleController {
 		return "people/newPerson";
 	}
 	@PostMapping()
-	public String createPerson(@ModelAttribute("person") Person person) {
-		personDAO.addNewPerson(person);
+	public String createPerson(@ModelAttribute("person") @Valid Person person, BindingResult bindingResult) {
+		validator.validate(person, bindingResult);
+		if(bindingResult.hasErrors()) {
+			return "people/newPerson";
+		}
+		dao.addNewPerson(person);
 		return "redirect:/people";
 	}
 	
 	@GetMapping("/{id}")
 	public String showPerson(@PathVariable("id") int personID, Model model) {
-		model.addAttribute("person", personDAO.getPerson(personID));
-		model.addAttribute("personBooks", personDAO.getPersonsBooks(personID));
+		model.addAttribute("person", dao.getPerson(personID).get());
+		model.addAttribute("personBooks", dao.getPersonsBooks(personID));
 		return "people/personInfo";
 	}
 	
 	@GetMapping("/{id}/edit")
 	public String editPersonView(@PathVariable("id") int personID, Model model) {
-		model.addAttribute("person", personDAO.getPerson(personID));
+		model.addAttribute("person", dao.getPerson(personID).get());
 		return "people/editPerson";
 	}
 	@PatchMapping()
-	public String editPerson(@ModelAttribute("person") Person person) {
-		personDAO.updatePerson(person);
+	public String editPerson(@ModelAttribute("person") @Valid Person person, BindingResult bindingResult) {
+		validator.validate(person, bindingResult);
+		if(bindingResult.hasErrors()) {
+			return "people/editPerson";
+		}
+		dao.updatePerson(person);
 		return "redirect:/people/"+person.getId();
 	}
 	@DeleteMapping("/{id}")
 	public String deletePerson(@PathVariable("id") int personID) {
-		personDAO.deletePerson(personID);
+		dao.deletePerson(personID);
 		return "redirect:/people";
 	}
 }

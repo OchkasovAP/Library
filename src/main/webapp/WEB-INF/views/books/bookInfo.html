@@ -7,6 +7,10 @@
 </head>
 
 <body>
+	<form th:method="GET" th:action="@{/}">
+		<input type="submit" value="Главная страница">
+	</form>
+	<hr>
 	<div th:text="${book}" />
 	<form th:method="PATCH" th:action="@{/books}" th:object="${book}">
 		<input type="hidden" th:field="*{id}">
