@@ -41,13 +41,15 @@ public class BookDAO {
 	}
 
 	public Optional<Book> getBook(int bookID) {
-		return jdbcTemplate.query(createQuery("WHERE b.id=?"), new BeanPropertyRowMapper<>(Book.class), bookID).stream().findAny();
+		return jdbcTemplate.query(createQuery("WHERE b.id=?"), new BeanPropertyRowMapper<>(Book.class), bookID).stream()
+				.findAny();
 	}
 
 	public Optional<Book> getBook(String bookName) {
-		return jdbcTemplate.query(createQuery("WHERE b.name=?"), new BeanPropertyRowMapper<>(Book.class), bookName).stream().findAny();
+		return jdbcTemplate.query(createQuery("WHERE b.name=?"), new BeanPropertyRowMapper<>(Book.class), bookName)
+				.stream().findAny();
 	}
-	
+
 	private String createQuery(String searchCondition) {
 		StringBuilder query = new StringBuilder(
 				"SELECT b.id, b.user_id userID, b.name, a.name author, b.year FROM book b\n");
