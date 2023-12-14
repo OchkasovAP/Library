@@ -1,37 +1,47 @@
-package ru.ochkasovap.Library.entity;
+package ru.ochkasovap.Library.models;
 
-import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
-import org.springframework.stereotype.Component;
-
-import javax.validation.constraints.Max;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 
-@Component
+@Entity
 public class Person {
-	private static final Calendar today = Calendar.getInstance();
-	private static final long actualYear = today.get(Calendar.YEAR);
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
 	private int id;
 	
 	@NotNull(message = "Поле ФИО не должно быть пустым")
 	@Pattern(regexp = "[А-Я][а-я]+ [А-Я][а-я]+ [А-Я][а-я]+", message = "Поле должно соответствовать шаблону \"Фамилия Имя Отчество\"")
+	@Column(name = "name")
 	private String name;
 	
 	@NotNull(message = "Поле \"год\" не должно быть пустым")
 	@Min(value = 1900, message = "Не корректный год рождения")
-	@Max(value = 2023, message = "Не корректный год рождения")
+	@Column(name = "year_of_birth")
 	private int yearOfBirth;
 	
+	@OneToMany (mappedBy = "person", orphanRemoval = true)
+	private List<Book> books;
+	
 	public Person() {
+		books = new LinkedList<>();
 	}
 
-	public Person(int id, String name, int yearOfBirth) {
-		super();
-		this.id = id;
+	public Person(String name, int yearOfBirth) {
+		this();
 		this.name = name;
 		this.yearOfBirth = yearOfBirth;
 	}
@@ -58,6 +68,25 @@ public class Person {
 
 	public void setYearOfBirth(int yearOfBirth) {
 		this.yearOfBirth = yearOfBirth;
+	}
+	
+	public List<Book> getBooks() {
+		return books;
+	}
+
+	public void setBooks(List<Book> books) {
+		this.books = books;
+	}
+	public void addBook(Book book) {
+		book.setTimeOfGetting(new Date());
+		books.add(book);
+		book.setPerson(this);
+		
+	}
+	public void removeBook(Book book) {
+		book.setTimeOfGetting(null);
+		books.remove(book);
+		book.setPerson(null);
 	}
 
 	@Override

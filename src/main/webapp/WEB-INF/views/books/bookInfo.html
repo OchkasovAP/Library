@@ -14,19 +14,20 @@
 	<div th:text="${book}" />
 	<form th:method="PATCH" th:action="@{/books}" th:object="${book}">
 		<input type="hidden" th:field="*{id}">
-		<input type="hidden" th:field="*{author}">
+		<input type="hidden" th:field="*{author.id}">
+		<input type="hidden" th:field="*{author.name}">
 		<input type="hidden" th:field="*{name}">
 		<input type="hidden" th:field="*{year}">
-		<div th:if="${!book.isBusy()}">
+		<div th:if="${person.name==null}">
 			<div>Эта книга свободна. Кому назначить ее?</div>
-			<label for="userID">Выберите человека</label>
-			<select th:field="*{userID}" id="userID">
+			<label for="person">Выберите пользователя</label>
+			<select th:field="*{person.id}" id="person">
 				<option th:each="person : ${people}"
 				 th:value="${person.id}"  th:text="${person.name}"/>
 			</select>
 			<input type="submit" value="Назначить книгу">
 		</div>
-		<div th:if="${book.isBusy()}">
+		<div th:if="${person.name!=null}">
 			<div th:text="'Книга сейчас у: '+${person.name}"/>
 			<input type="submit" value="Освободить книгу"> 
 		</div>

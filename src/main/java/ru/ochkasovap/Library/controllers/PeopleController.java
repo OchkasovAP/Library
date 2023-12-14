@@ -13,21 +13,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.validation.Valid;
-import ru.ochkasovap.Library.dao.PersonDAO;
-import ru.ochkasovap.Library.entity.Person;
+import ru.ochkasovap.Library.models.Person;
+import ru.ochkasovap.Library.services.PeopleService;
 import ru.ochkasovap.Library.util.PersonValidator;
 
 @Controller
 @RequestMapping("/people")
 public class PeopleController {
 	@Autowired
-	private PersonDAO dao;
+	private PeopleService peopleService;
 	@Autowired
 	private PersonValidator validator;
 	
 	@GetMapping()
 	public String showPeople(Model model) {
-		model.addAttribute("people", dao.getPersons());
+		model.addAttribute("people", peopleService.findAll());
 		return "people/allPeople";
 	}
 	
@@ -41,20 +41,20 @@ public class PeopleController {
 		if(bindingResult.hasErrors()) {
 			return "people/newPerson";
 		}
-		dao.addNewPerson(person);
+		peopleService.save(person);
 		return "redirect:/people";
 	}
 	
 	@GetMapping("/{id}")
 	public String showPerson(@PathVariable("id") int personID, Model model) {
-		model.addAttribute("person", dao.getPerson(personID).get());
-		model.addAttribute("personBooks", dao.getPersonsBooks(personID));
+		model.addAttribute("person", peopleService.findOne(personID).get());
+		model.addAttribute("personBooks", peopleService.findPersonBooks(personID));
 		return "people/personInfo";
 	}
 	
 	@GetMapping("/{id}/edit")
 	public String editPersonView(@PathVariable("id") int personID, Model model) {
-		model.addAttribute("person", dao.getPerson(personID).get());
+		model.addAttribute("person", peopleService.findOne(personID).get());
 		return "people/editPerson";
 	}
 	@PatchMapping()
@@ -63,12 +63,12 @@ public class PeopleController {
 		if(bindingResult.hasErrors()) {
 			return "people/editPerson";
 		}
-		dao.updatePerson(person);
+		peopleService.update(person);
 		return "redirect:/people/"+person.getId();
 	}
 	@DeleteMapping("/{id}")
 	public String deletePerson(@PathVariable("id") int personID) {
-		dao.deletePerson(personID);
+		peopleService.delete(personID);
 		return "redirect:/people";
 	}
 }

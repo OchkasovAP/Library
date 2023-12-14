@@ -33,7 +33,7 @@
 	<div th:if="${!personBooks.isEmpty()}">
 		<hr>
 		<div><b>Книги:</b></div>
-		<div th:each="book : ${personBooks}" th:text="${book}">Перечень книг</div>
+		<div th:each="book : ${personBooks}" th:text="${book}" th:style="${book.isOverdue()}? 'color:red':'color:black'">Перечень книг</div>
 	</div>
 	<hr>
 	<a th:href="@{/people/}+${person.id}+'/edit'" class="button">Редактировать</a>
