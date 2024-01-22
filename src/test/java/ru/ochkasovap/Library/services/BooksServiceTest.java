@@ -25,7 +25,7 @@ import ru.ochkasovap.Library.models.Person;
 import ru.ochkasovap.Library.repositories.AuthorRepository;
 import ru.ochkasovap.Library.repositories.BooksRepository;
 
-public class BooksServiceTest {
+class BooksServiceTest {
 	private BooksService service;
 	private BooksRepository booksRepository;
 	private AuthorRepository authorRepository;
@@ -34,14 +34,14 @@ public class BooksServiceTest {
 	private List<Person> persons;
 
 	@Before
-	public void configService() {
+	void configService() {
 		booksRepository = mock(BooksRepository.class);
 		authorRepository = mock(AuthorRepository.class);
 		service = new BooksService(booksRepository, authorRepository);
 		createExpectedList();
 	}
 
-	public void createPersonList() {
+	void createPersonList() {
 		persons = new ArrayList<>();
 		int yearOfBirth = 1990;
 		for (int i = 1; i < 4; i++) {
@@ -51,7 +51,7 @@ public class BooksServiceTest {
 		}
 	}
 
-	public void createAuthorList() {
+	void createAuthorList() {
 		authors = new ArrayList<>();
 		for (int i = 1; i < 6; i++) {
 			Author author = new Author("Author" + i);
@@ -60,7 +60,7 @@ public class BooksServiceTest {
 		}
 	}
 
-	public void createExpectedList() {
+	void createExpectedList() {
 		createAuthorList();
 		createPersonList();
 		expectedList = new ArrayList<>();
@@ -78,7 +78,7 @@ public class BooksServiceTest {
 	}
 
 	@Test
-	public void findAttributesWithouParams() {
+	void findAttributesWithouParams() {
 		List<Book> books = expectedList;
 		when(booksRepository.findAll()).thenReturn(books);
 		Map<String, Object> actual = service.findAllWithAttributes("", "", "");
@@ -88,7 +88,7 @@ public class BooksServiceTest {
 	}
 
 	@Test
-	public void findAtributesWithPageAndPerPage() {
+	void findAtributesWithPageAndPerPage() {
 		@SuppressWarnings("unchecked")
 		Page<Book> page = mock(Page.class);
 		List<Book> books = expectedList.stream().limit(2).toList();
@@ -106,7 +106,7 @@ public class BooksServiceTest {
 	}
 
 	@Test
-	public void findAllBooksSortByYear() {
+	void findAllBooksSortByYear() {
 		List<Book> sortedBooks = expectedList.stream().sorted(Comparator.comparing(b -> b.getYear())).toList();
 		when(booksRepository.findAll(Sort.by("year"))).thenReturn(sortedBooks);
 		Map<String, Object> actual = service.findAllWithAttributes("", "", "true");
@@ -116,7 +116,7 @@ public class BooksServiceTest {
 	}
 
 	@Test
-	public void findAtributesWithPageAndPerPageSortByYear() {
+	void findAtributesWithPageAndPerPageSortByYear() {
 		@SuppressWarnings("unchecked")
 		Page<Book> page = mock(Page.class);
 		List<Book> books = expectedList.stream().sorted(Comparator.comparing(b -> b.getYear()))
@@ -135,18 +135,18 @@ public class BooksServiceTest {
 	}
 
 	@Test
-	public void findByNullSearchRequest() {
+	void findByNullSearchRequest() {
 		assertFalse(service.findBySearchRequest(null).isPresent());
 		assertFalse(service.findBySearchRequest("").isPresent());
 	}
 
 	@Test
-	public void findBySearchBook1() {
+	void findBySearchBook1() {
 
 	}
 
 	@Test
-	public void deleteTest() {
+	void deleteTest() {
 		Book book = expectedList.get(0);
 		Author author = new Author("TestAuthor");
 		book.setAuthor(author);
@@ -165,7 +165,7 @@ public class BooksServiceTest {
 	}
 
 	@Test
-	public void saveTest() {
+	void saveTest() {
 		Book book = new Book("NewBook", 2000);
 		book.setId(0);
 		Author author = new Author("TestAuthor");

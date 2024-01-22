@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -19,25 +20,29 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
+
+import ru.ochkasovap.Library.util.StringSortTypeConverter;
 
 @Configuration
 @ComponentScan("ru.ochkasovap.Library")
 @PropertySource("classpath:hibernate.properties")
 @EnableTransactionManagement
 @EnableJpaRepositories("ru.ochkasovap.Library.repositories")
-@EnableWebMvc 
-public class SpringConfig {
+@EnableWebMvc
+public class SpringConfig implements WebMvcConfigurer {
 
 	@Autowired
 	private ApplicationContext applicationContext;
 	@Autowired
 	private Environment env;
-	
+
 	@Bean
 	public SpringResourceTemplateResolver templateResolver() {
 		SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
@@ -49,7 +54,7 @@ public class SpringConfig {
 		resolver.setCacheable(true);//
 		return resolver;
 	}
-	
+
 	@Bean
 	public SpringTemplateEngine templateEngine() {
 		SpringTemplateEngine templateEngine = new SpringTemplateEngine();
@@ -57,7 +62,7 @@ public class SpringConfig {
 		templateEngine.setEnableSpringELCompiler(true);
 		return templateEngine;
 	}
-	
+
 	@Bean
 	public ThymeleafViewResolver viewResolver() {
 		ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
@@ -65,44 +70,52 @@ public class SpringConfig {
 		viewResolver.setTemplateEngine(templateEngine());
 		return viewResolver;
 	}
-	 @Bean
-	    public DataSource dataSource() {
-	        DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
-	        dataSource.setDriverClassName(env.getRequiredProperty("hibernate.driver_class"));
-	        dataSource.setUrl(env.getRequiredProperty("hibernate.connection.url"));
-	        dataSource.setUsername(env.getRequiredProperty("hibernate.connection.username"));
-	        dataSource.setPassword(env.getRequiredProperty("hibernate.connection.password"));
+	@Bean
+	public DataSource dataSource() {
+		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
-	        return dataSource;
-	    }
+		dataSource.setDriverClassName(env.getRequiredProperty("hibernate.driver_class"));
+		dataSource.setUrl(env.getRequiredProperty("hibernate.connection.url"));
+		dataSource.setUsername(env.getRequiredProperty("hibernate.connection.username"));
+		dataSource.setPassword(env.getRequiredProperty("hibernate.connection.password"));
 
-	    private Properties hibernateProperties() {
-	        Properties properties = new Properties();
-	        properties.put("hibernate.format_sql", env.getRequiredProperty("hibernate.format_sql"));
-			properties.put("hibernate.show_sql", env.getRequiredProperty("hibernate.show_sql"));
-			properties.put("hibernate.dialect", env.getRequiredProperty("hibernate.dialect"));
-	        return properties;
-	    }
+		return dataSource;
+	}
 
-	    @Bean
-	    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-	        final LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-	        em.setDataSource(dataSource());
-	        em.setPackagesToScan("ru.ochkasovap.Library.models");
+	private Properties hibernateProperties() {
+		Properties properties = new Properties();
+		properties.put("hibernate.format_sql", env.getRequiredProperty("hibernate.format_sql"));
+		properties.put("hibernate.show_sql", env.getRequiredProperty("hibernate.show_sql"));
+		properties.put("hibernate.dialect", env.getRequiredProperty("hibernate.dialect"));
+		return properties;
+	}
 
-	        final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-	        em.setJpaVendorAdapter(vendorAdapter);
-	        em.setJpaProperties(hibernateProperties());
+	@Bean
+	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+		final LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+		em.setDataSource(dataSource());
+		em.setPackagesToScan("ru.ochkasovap.Library.models");
 
-	        return em;
-	    }
+		final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+		em.setJpaVendorAdapter(vendorAdapter);
+		em.setJpaProperties(hibernateProperties());
 
-	    @Bean
-	    public PlatformTransactionManager transactionManager() {
-	        JpaTransactionManager transactionManager = new JpaTransactionManager();
-	        transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
+		return em;
+	}
 
-	        return transactionManager;
-	    }
+	@Bean
+	public PlatformTransactionManager transactionManager() {
+		JpaTransactionManager transactionManager = new JpaTransactionManager();
+		transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
+
+		return transactionManager;
+	}
+
+	@Override
+	public void addFormatters(FormatterRegistry registry) {
+		registry.addConverter(new StringSortTypeConverter());
+	}
+	
+
 }

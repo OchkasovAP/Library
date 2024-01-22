@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>Пользователи</title>
+	<title>Читатели</title>
 	<style>
 		.button {
 			display: inline-block;
@@ -29,10 +29,10 @@
 	</form>
 	<hr>
 	<div th:each="person : ${people}">
-		<a th:href="@{/people/}+${person.id}" th:text="${person}" class="button">Ссылка на пользователя</a>
+		<a th:href="@{/people/{id} (id=${person.id})}" th:text="${person}" class="button">Ссылка на пользователя</a>
 	</div>
 	<hr>
-	<a th:href="@{/people/new}" class="button">Добавить человека</a>
+	<a th:href="@{/people/new}" class="button">Добавить читателя</a>
 </body>
 
 </html>

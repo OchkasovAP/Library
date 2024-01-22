@@ -43,31 +43,28 @@
 	
 	<hr>
 	<div th:each="book : ${books}">
-		<a th:href="@{/books/}+${book.id}" class="button" th:text="${book}">Ссылка на книгу</a>
+		<a th:href="@{/books/{id} (id=${book.id})}" class="button" th:text="${book}">Ссылка на книгу</a>
 	</div>
 	<hr>
 	<form th:method="GET" th:action="@{/books}">
-		<a th:href="@{/books}+'?sort_by_year='+${sort_by_year}" th:class="${!page.equals('')}?'button':'pushedButton'">Все книги на одной странице</a>
-		<label>Отобразить </label>
+		<a th:href="@{/books (sorted_by=${sorted_by})}" th:class="${!page.equals('')}?'button':'pushedButton'">Все книги на одной странице</a>
+		<label>Книг на странице - </label>
 		<input type="number" name="books_per_page" th:value="${books_per_page}" size="1">
-		<label>книг на странице</label>
 		<input type="submit" hidden>
-		<input type="hidden" name="sort_by_year" th:value="${sort_by_year}">
+		<input type="hidden" name="sorted_by" th:value="${sorted_by}">
 		<input type="hidden" name="page" value="0">
 	</form>
 	<div th:if="${!page.equals('')&&!books_per_page.equals('')}">
-		<a th:href="@{/books}+'?page='+${previous_page}+'&books_per_page='+${books_per_page}+'&sort_by_year='+${sort_by_year}"
+		<a th:href="@{/books (page=${previous_page}, books_per_page=${books_per_page}, sorted_by=${sorted_by})}"
 			th:class="${page.equals('0')}?'pushedButton':'button'">Предыдущая страница</a>
 		<label class="pushedButton" th:text="${current_page}"></label>
-		<a th:href="@{/books}+'?page='+${next_page}+'&books_per_page='+${books_per_page}+'&sort_by_year='+${sort_by_year}"
+		<a th:href="@{/books (page=${next_page}, books_per_page=${books_per_page}, sorted_by=${sorted_by})}"
 			th:class="${page.equals(max_page)}?'pushedButton':'button'">Следующая страница</a>
 	</div>
 	<hr>
-	<label>Сортировка книг по году издания</label>
-	<a th:href="@{/books}+'?page='+${page}+'&books_per_page='+${books_per_page}+'&sort_by_year=true'" 
-	th:class="${sort_by_year.equals('true')}?'pushedButton':'button'">Да</a>
-	<a th:href="@{/books}+'?page='+${page}+'&books_per_page='+${books_per_page}+'&sort_by_year=false'" 
-	th:class="${!sort_by_year.equals('true')}?'pushedButton':'button'">Нет</a>
+	<label>Сортировка</label>
+	<a th:each="sortType : ${sortTypes}" th:href="@{/books (page=${page},books_per_page=${books_per_page}, sorted_by=${sortType})}" 
+	th:class="${sorted_by.equals(sortType)}?'pushedButton':'button'" th:text="${sortType.translate()}">Тип сортировки</a>
 	<br>
 	<a th:href="@{/books/new}" class="button">Добавить книгу</a>
 	<a th:href="@{/books/search}" class="button">Поиск</a>

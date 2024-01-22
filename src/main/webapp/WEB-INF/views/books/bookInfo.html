@@ -20,7 +20,7 @@
 		<input type="hidden" th:field="*{year}">
 		<div th:if="${person.name==null}">
 			<div>Эта книга свободна. Кому назначить ее?</div>
-			<label for="person">Выберите пользователя</label>
+			<label for="person">Выберите читателя</label>
 			<select th:field="*{person.id}" id="person">
 				<option th:each="person : ${people}"
 				 th:value="${person.id}"  th:text="${person.name}"/>

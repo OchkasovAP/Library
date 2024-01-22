@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>Пользователь</title>
+	<title>Читатель</title>
 	<style>
 		.button {
 			display: inline-block;
@@ -29,7 +29,7 @@
 	</form>
 	<hr>
 	<div th:text="${person}"></div>
-	<div th:if="${personBooks.isEmpty()}">Пользователь пока не взял ни одной книги</div>
+	<div th:if="${personBooks.isEmpty()}">Читатель пока не взял ни одной книги</div>
 	<div th:if="${!personBooks.isEmpty()}">
 		<hr>
 		<div><b>Книги:</b></div>

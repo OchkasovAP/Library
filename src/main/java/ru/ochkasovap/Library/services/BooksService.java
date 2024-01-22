@@ -15,6 +15,8 @@ import ru.ochkasovap.Library.models.Author;
 import ru.ochkasovap.Library.models.Book;
 import ru.ochkasovap.Library.repositories.AuthorRepository;
 import ru.ochkasovap.Library.repositories.BooksRepository;
+import ru.ochkasovap.Library.util.SortType;
+
 import static java.lang.Integer.*;
 
 @Service
@@ -22,7 +24,6 @@ import static java.lang.Integer.*;
 public class BooksService {
 	
 	private final BooksRepository booksRepository;
-
 	private final AuthorRepository authorRepository;
 	
 	@Autowired
@@ -32,35 +33,26 @@ public class BooksService {
 		this.authorRepository = authorRepository;
 	}
 
-	public List<Book> findAll(String page, String booksPerPage, String sortByYear) {
-		if (sortByYear.equals("true") && !isNullParam(page) && !isNullParam(booksPerPage)) {
-			return booksRepository.findAll(PageRequest.of(parseInt(page), parseInt(booksPerPage), Sort.by("year"))).getContent();
-		} else if (sortByYear.equals("true") && (isNullParam(page) || isNullParam(booksPerPage))) {
-			return booksRepository.findAll(Sort.by("year"));
-		} else if(!sortByYear.equals("true") && !isNullParam(page) && !isNullParam(booksPerPage)) {
-			return booksRepository.findAll(PageRequest.of(parseInt(page), parseInt(booksPerPage))).getContent();
-		}
-		return booksRepository.findAll();
-	}
-	public Map<String, Object> findAllWithAttributes(String pageParam, String booksPerPageParam, String sortByYear) {
+	public Map<String, Object> findAllWithAttributes(String pageParam, String booksPerPageParam, SortType sortType) {
 		Map<String, Object> attributes = new HashMap<>();
-		List<Book> books = findAll(pageParam, booksPerPageParam, sortByYear);
-		attributes.put("books", books);
-		if(!isNullParam(booksPerPageParam)&&!(isNullParam(pageParam))) {
+		attributes.put("books", findAll(pageParam, booksPerPageParam, Sort.by(sortType.fieldName())));
+		attributes.put("sortTypes", List.of(SortType.values()));
+		attributes.put("sorted_by", sortType);
+		if(!booksPerPageParam.isBlank()&&!pageParam.isBlank()) {
 			int page = parseInt(pageParam);
 			int booksPerPage = parseInt(booksPerPageParam);
-			attributes.put("current_page", (page+1));
-			long maxPage = booksRepository.count()/booksPerPage-1;
-			attributes.put("max_page", maxPage);
-			attributes.put("next_page", (page<maxPage?page+1:page));
-			attributes.put("previous_page", (page>0?page-1:page));
+			double maxPage =Math.ceil((double)booksRepository.count()/booksPerPage)-1;
+			attributes.putAll(Map.of("current_page", (page+1),
+										"max_page", maxPage,
+										"next_page", (page<maxPage?page+1:page),
+										"previous_page", (page>0?page-1:page)));
 		}
 		return attributes;
 	}
 	
 	
 	public Optional<List<Book>> findBySearchRequest(String request) {
-		if(isNullParam(request)) { 
+		if(request.isBlank()) { 
 			return Optional.empty();
 		}
 		return Optional.of(booksRepository.findByNameStartingWith(request));
@@ -94,7 +86,15 @@ public class BooksService {
 			authorRepository.deleteById(author.getId());
 		}
 	}
-
+	
+	private List<Book> findAll(String page, String booksPerPage, Sort sort) {
+		if (!page.isBlank() && !booksPerPage.isBlank()) {
+			return booksRepository.findAll(PageRequest.of(parseInt(page), parseInt(booksPerPage), sort)).getContent();
+		} else {
+			return booksRepository.findAll(sort);
+		}
+	}
+	
 	private Author getAuthor(Book book) {
 		Optional<Author> author = authorRepository.findByName(book.getAuthor().getName()).stream().findAny();
 		if(author.isEmpty()) {
@@ -103,9 +103,4 @@ public class BooksService {
 		}
 		return author.get();
 	}
-	private boolean isNullParam(String parameter) {
-		return parameter==null||"".equals(parameter);
-	}
-
-	
 }

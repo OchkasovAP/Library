@@ -13,11 +13,14 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import ru.ochkasovap.Library.models.Book;
 import ru.ochkasovap.Library.models.Person;
 import ru.ochkasovap.Library.services.BooksService;
 import ru.ochkasovap.Library.services.PeopleService;
 import ru.ochkasovap.Library.util.BookValidator;
+import ru.ochkasovap.Library.util.SortType;
 
 @Controller
 @RequestMapping("/books")
@@ -33,8 +36,8 @@ public class BooksController {
 	public String showBooks(Model model,
 			@ModelAttribute("page") String page,
 			@ModelAttribute("books_per_page") String booksPerPage,
-			@ModelAttribute("sort_by_year") String sortByYear) {
-		model.addAllAttributes(booksService.findAllWithAttributes(page, booksPerPage, sortByYear));
+			@RequestParam("sorted_by") SortType sortType) {
+		model.addAllAttributes(booksService.findAllWithAttributes(page, booksPerPage, sortType));
 		return "books/allBooks";
 	}
 	@GetMapping("/search")
@@ -54,7 +57,7 @@ public class BooksController {
 			return "books/newBook";
 		}
 		booksService.save(book);
-		return "redirect:/books";
+		return "redirect:/books?sorted_by=ID";
 	}
 	
 	@GetMapping("/{id}")
@@ -79,12 +82,12 @@ public class BooksController {
 			return "books/editBook";
 		}	
 		booksService.update(book);
-		return "redirect:/books";
+		return "redirect:/books?sorted_by=ID";
 	}
 	
 	@DeleteMapping("/{id}")
 	public String deleteBook(@PathVariable("id") int bookID) {
 		booksService.delete(bookID);
-		return "redirect:/books";
+		return "redirect:/books?sorted_by=ID";
 	}
 }
